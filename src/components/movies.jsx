@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getMovies }  from "../services/fakeMovieService";
 import { deleteMovie } from "../services/fakeMovieService";
+import Like from './common/like';
 
 class Movies extends Component {
     state = { 
@@ -12,11 +13,19 @@ class Movies extends Component {
         return (
             <div className="Movie">
                 <p>There are no movie</p>
+                <p><i class="fa fa-heart"></i>({this.state.movies.filter(movie => movie.liked).length})
+                <i class="fa fa-heart-o"></i>({this.state.movies.filter(movie => !movie.liked).length}
+                </p>
             </div>
         ) 
         return ( 
             <React.Fragment>
                 <p className="font-weight-bold my-4 text-center">{ movieCount } movies in the database.</p>
+                <div className="text-center">
+                    <p><i class="fa fa-heart"></i>({this.state.movies.filter(movie => movie.liked).length})
+                    <i class="fa fa-heart-o"></i>({this.state.movies.filter(movie => !movie.liked).length})
+                    </p>
+                </div>
                 <table className="table table-striped">
                     <thead>
                     <tr>
@@ -24,6 +33,7 @@ class Movies extends Component {
                         <th>Genre</th>
                         <th>Stock</th>
                         <th>Rate</th>
+                        <th></th>
                         <th></th>
 
                     </tr>
@@ -35,6 +45,8 @@ class Movies extends Component {
                                 <td>{ movie.genre.name }</td>
                                 <td>{ movie.numberInStock }</td>
                                 <td>{ movie.dailyRentalRate }</td>
+                                {/* <td><i className={ this.likeStyle(movie.liked) } onClick={()=> this.handleLikeUnlike(movie)}></i></td> */}
+                                <td><Like like={ movie.liked } onClick={()=> this.handleLike(movie)}/></td>
                                 <td><button className="btn btn-danger btn-sm" onClick={ ()=> this.handleDelete(movie)}>Delete</button></td>
                             </tr>
                         ))}
@@ -51,25 +63,33 @@ class Movies extends Component {
         this.setState({ movies })
     }
 
+    handleLikeUnlike = (movie) => {
 
-    renderMovieTable = ()=> {
-
-        return (
-            this.state.movies.map((movie, index) => {
-                let {_id:id,title, genre:{name}, numberInStock:stock, dailyRentalRate:rate} = movie;
-
-                return (
-                    <tr key={id}>
-                        <td>{title}</td>
-                        <td>{name}</td>
-                        <td>{stock}</td>
-                        <td>{rate}</td>
-                        <td><button className="btn btn-danger btn-sm" onClick={()=>this.handleDelete(id)}>Delete</button></td>
-                    </tr>
-                )
-            })
-        );
+        const movies = [...this.state.movies];
+        const index = movies.indexOf(movies);
+        movies[index] = {...movie};
+        movies[index].liked = !movies[index].liked
+        this.setState({ movies });
+        // console.log(movie);
     }
+
+    handleLike = ( movie ) => {
+        const movies = [...this.state.movies];
+        const index = movies.indexOf(movie);
+        movies[index] = {...movie};
+        movies[index].liked = !movies[index].liked
+        this.setState({ movies });
+        // console.log('handle like');
+        // console.log(movie);
+    }
+
+    likeStyle = (like) => {
+        // <i class="fas fa-thumbs-up"></i>
+        return  like === true ? "3x fa fa-thumbs-up" : "3x fa fa-thumbs-down";
+    }
+
+
+    
 }
  
 export default Movies;
