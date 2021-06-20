@@ -2,13 +2,50 @@ import React, { Component } from 'react';
 import { getMovies }  from "../services/fakeMovieService";
 import { deleteMovie } from "../services/fakeMovieService";
 import Like from './common/like';
+import Pagination from './common/pagination';
 
 class Movies extends Component {
     state = { 
-        movies : getMovies()
+        movies : getMovies(),
+        currentPage: 1,
+        pageSize: 4
      }
+
+     handleDelete = ( movie )=> {
+        // console.log(movieId);
+        const movies = this.state.movies.filter( m => m._id !== movie._id);
+        this.setState({ movies })
+    }
+
+    handleLikeUnlike = (movie) => {
+
+        const movies = [...this.state.movies];
+        const index = movies.indexOf(movies);
+        movies[index] = {...movie};
+        movies[index].liked = !movies[index].liked
+        this.setState({ movies });
+        // console.log(movie);
+    }
+
+    handleLike = ( movie ) => {
+        const movies = [...this.state.movies];
+        const index = movies.indexOf(movie);
+        movies[index] = {...movie};
+        movies[index].liked = !movies[index].liked
+        this.setState({ movies });
+        // console.log('handle like');
+        // console.log(movie);
+    }
+
+    handlePageChange = ( page ) => {
+        // console.log( page )
+        this.setState({currentPage: page});
+    }
+
     render() {
         const { length:movieCount } = this.state.movies;
+        const count = this.state.movies.length;
+        const { currentPage, pageSize} = this.state;
         if(movieCount === 0) 
         return (
             <div className="Movie">
@@ -52,37 +89,19 @@ class Movies extends Component {
                         ))}
                    </tbody>
                 </table>
+                <Pagination 
+                    itemsCount={ count }
+                    pageSize = { pageSize }
+                    currentPage = { currentPage }
+                    onPageChange = { this.handlePageChange }  
+                >  
+                </Pagination>
             </React.Fragment>
           
          );
     }
 
-    handleDelete = ( movie )=> {
-        // console.log(movieId);
-        const movies = this.state.movies.filter( m => m._id !== movie._id);
-        this.setState({ movies })
-    }
-
-    handleLikeUnlike = (movie) => {
-
-        const movies = [...this.state.movies];
-        const index = movies.indexOf(movies);
-        movies[index] = {...movie};
-        movies[index].liked = !movies[index].liked
-        this.setState({ movies });
-        // console.log(movie);
-    }
-
-    handleLike = ( movie ) => {
-        const movies = [...this.state.movies];
-        const index = movies.indexOf(movie);
-        movies[index] = {...movie};
-        movies[index].liked = !movies[index].liked
-        this.setState({ movies });
-        // console.log('handle like');
-        // console.log(movie);
-    }
-
+ 
     likeStyle = (like) => {
         // <i class="fas fa-thumbs-up"></i>
         return  like === true ? "3x fa fa-thumbs-up" : "3x fa fa-thumbs-down";
